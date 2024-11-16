@@ -71,8 +71,10 @@ function updateLessonOptions(bookNumber, lessonSelect) {
     // 启用课程选择
     lessonSelect.disabled = false;
     
-    // 获取选中册数的总课程数
+    // 获取选中册数的总课程数和标题
     const totalLessons = lessonData[bookNumber]?.totalLessons;
+    const titles = bookNumber === '4' ? book4Titles : 
+                  bookNumber === '3' ? book3Titles : null;
     
     if (!totalLessons) {
         console.error('未找到对应册数的课程数据');
@@ -83,7 +85,13 @@ function updateLessonOptions(bookNumber, lessonSelect) {
     for (let i = 1; i <= totalLessons; i++) {
         const option = document.createElement('option');
         option.value = i;
-        option.textContent = `第 ${i} 课`;
+        if (titles && titles[i]) {
+            // 如果有英文标题，显示课号和标题
+            option.textContent = `第 ${i} 课 ${titles[i]}`;
+        } else {
+            // 否则只显示课号
+            option.textContent = `第 ${i} 课`;
+        }
         lessonSelect.appendChild(option);
     }
     
