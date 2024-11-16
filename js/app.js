@@ -92,32 +92,27 @@ function updateLessonOptions(bookNumber, lessonSelect) {
 }
 
 async function loadLesson(bookNumber, lessonNumber) {
-    try {
-        console.log(`尝试加载第${bookNumber}册第${lessonNumber}课`);
-        const lesson = await loadLessonData(bookNumber, lessonNumber);
-        console.log('成功加载课程数据:', lesson);
-        
-        // 显示课程内容
-        const sentenceDisplay = document.getElementById('sentenceDisplay');
-        if (sentenceDisplay) {
-            sentenceDisplay.innerHTML = `<h2>${lesson.title}</h2>`;
-            
-            // 更新音频源
+    getLessonData(bookNumber, lessonNumber)
+        .then(lesson => {
             const audio = document.getElementById('lessonAudio');
-            if (audio && lesson.audioUrl) {
-                audio.src = lesson.audioUrl;
-                audio.onerror = function() {
-                    console.error('音频加载失败');
-                    handleError(new Error('音频文件加载失败'));
-                };
-            }
-        } else {
-            console.error('未找到 sentenceDisplay 元素');
-        }
-    } catch (error) {
-        console.error('加载课程失败:', error);
-        handleError(error);
-    }
+            audio.src = lesson.audioUrl;
+            
+            // 添加错误处理
+            audio.onerror = function() {
+                console.error('音频加载失败:', audio.src);
+                document.getElementById('feedback').textContent = '音频加载失败，请检查文件路径';
+            };
+            
+            // 添加成功处理
+            audio.onloadeddata = function() {
+                console.log('音频加载成功');
+                document.getElementById('feedback').textContent = '';
+            };
+        })
+        .catch(error => {
+            console.error('加载课程失败:', error);
+            document.getElementById('feedback').textContent = error.message;
+        });
 }
 
 // 当 DOM 加载完成后开始初始化
