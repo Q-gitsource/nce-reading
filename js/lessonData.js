@@ -79,7 +79,7 @@ const book4Titles = {
 };
 
 // GitHub Pages 基础 URL
-const AUDIO_BASE_URL = './audio';
+const AUDIO_BASE_URL = '/nce-reading/audio';
 
 // 为每个课程生成数据
 for (let book in lessonData) {
