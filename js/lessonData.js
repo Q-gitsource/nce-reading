@@ -17,7 +17,12 @@ const lessonData = {
     '4': {
         totalLessons: 48,
         name: '新概念英语第四册',
-        lessons: {}
+        lessons: {
+            '1': {
+                title: 'Finding Fossil Man',
+                audioUrl: './audio/01－Finding Fossil Man.mp3'
+            }
+        }
     }
 };
 
@@ -73,19 +78,20 @@ const book4Titles = {
     48: "Planning a Share Portfolio"
 };
 
-// OneDrive 文件夹 ID
-const ONEDRIVE_ID = '284e33473ea70623';
-const ONEDRIVE_RESID = 'ElF0Sq6RcfRCs-PYj5VGupsBJdoHTv8wWpl-ul7c6hLQEQ';
-const ONEDRIVE_AUTHKEY = '3cGUyl';
+// GitHub Pages 基础 URL
+const AUDIO_BASE_URL = './audio';
 
 // 为每个课程生成数据
 for (let book in lessonData) {
     for (let i = 1; i <= lessonData[book].totalLessons; i++) {
         if (book === '4') {
-            const fileName = `${i.toString().padStart(2, '0')}－${book4Titles[i]}.mp3`;
+            const paddedNumber = i.toString().padStart(2, '0');
+            const title = book4Titles[i];
+            const fileName = `${paddedNumber}－${title}.mp3`;
+            
             lessonData[book].lessons[i] = {
-                title: `第${book}册第${i}课 ${book4Titles[i]}`,
-                audioUrl: `https://onedrive.live.com/download?cid=${ONEDRIVE_ID}&resid=${ONEDRIVE_RESID}&authkey=${ONEDRIVE_AUTHKEY}&parId=${encodeURIComponent(fileName)}`
+                title: `${book4Titles[i]}`,
+                audioUrl: `${AUDIO_BASE_URL}/${fileName}`
             };
         } else {
             lessonData[book].lessons[i] = {
