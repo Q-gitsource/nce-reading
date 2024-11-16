@@ -43,13 +43,13 @@ const book4Titles = {
     18: "Porpoises",
     19: "The Stuff of Dreams",
     20: "Snake Poison",
-    21: "William S. Hart and the Early 'Western' Film",
+    21: "William S. Hart and the Early Western Film",
     22: "Knowledge and Progress",
     23: "Bird Flight",
     24: "Beauty",
     25: "Non-Auditory Effects of Noise",
     26: "The Past Life of the Earth",
-    27: "The 'Vasa'",
+    27: "The vasa",
     28: "Patients and Doctors",
     29: "The Hovercraft",
     30: "Exploring the Sea-Floor",
@@ -65,16 +65,18 @@ const book4Titles = {
     40: "Waves",
     41: "Training Elephants",
     42: "Recording an Earthquake",
-    43: "Are There Strangers in Space?",
+    43: "Are There Strangers in Space",
     44: "Patterns of Culture",
-    45: "Men and Galaxies",
+    45: "Of Men and Galaxies",
     46: "Hobbies",
     47: "The Great Escape",
     48: "Planning a Share Portfolio"
 };
 
 // OneDrive 文件夹 ID
-const ONEDRIVE_ID = '284e33473ea70623/ElF0Sq6RcfRCs-PYj5VGupsBJdoHTv8wWpl-ul7c6hLQEQ';
+const ONEDRIVE_ID = '284e33473ea70623';
+const ONEDRIVE_RESID = 'ElF0Sq6RcfRCs-PYj5VGupsBJdoHTv8wWpl-ul7c6hLQEQ';
+const ONEDRIVE_AUTHKEY = '3cGUyl';
 
 // 为每个课程生成数据
 for (let book in lessonData) {
@@ -83,12 +85,12 @@ for (let book in lessonData) {
             const fileName = `${i.toString().padStart(2, '0')}－${book4Titles[i]}.mp3`;
             lessonData[book].lessons[i] = {
                 title: `第${book}册第${i}课 ${book4Titles[i]}`,
-                audioUrl: `https://onedrive.live.com/embed?cid=${ONEDRIVE_ID}&resid=${encodeURIComponent(fileName)}&authkey=3cGUyl`
+                audioUrl: `https://onedrive.live.com/download?cid=${ONEDRIVE_ID}&resid=${ONEDRIVE_RESID}&authkey=${ONEDRIVE_AUTHKEY}&parId=${encodeURIComponent(fileName)}`
             };
         } else {
             lessonData[book].lessons[i] = {
                 title: `第${book}册第${i}课`,
-                audioUrl: null  // 其他册数暂时不设置音频
+                audioUrl: null
             };
         }
     }
