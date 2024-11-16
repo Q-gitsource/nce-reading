@@ -88,17 +88,15 @@ function updateLessonOptions(bookNumber, lessonSelect) {
         const option = document.createElement('option');
         option.value = i;
         if (titles && titles[i]) {
-            // 如果有英文标题，显示课号和标题
-            option.textContent = `第 ${i} 课 ${titles[i]}`;
+            // 显示课号和英文标题
+            option.textContent = `第 ${i} 课: ${titles[i]}`;
         } else {
-            // 否则只显示课号
             option.textContent = `第 ${i} 课`;
         }
         lessonSelect.appendChild(option);
     }
     
     lessonSelect.disabled = false;
-    console.log(`已添加 ${totalLessons} 个课程选项`);
 }
 
 // 添加 getLessonData 函数
@@ -119,17 +117,26 @@ function getLessonData(bookNumber, lessonNumber) {
 async function loadLesson(bookNumber, lessonNumber) {
     try {
         const lesson = await getLessonData(bookNumber, lessonNumber);
-        console.log('加载课程数据:', lesson);  // 添加调试日志
+        console.log('加载课程数据:', lesson);
         
         const audio = document.getElementById('lessonAudio');
         const sentenceDisplay = document.getElementById('sentenceDisplay');
         
         // 显示课程标题
-        sentenceDisplay.textContent = lesson.title;
+        const titles = bookNumber === '4' ? book4Titles : 
+                      bookNumber === '3' ? book3Titles :
+                      bookNumber === '2' ? book2Titles :
+                      bookNumber === '1' ? book1Titles : null;
+        
+        if (titles && titles[lessonNumber]) {
+            sentenceDisplay.textContent = titles[lessonNumber];
+        } else {
+            sentenceDisplay.textContent = `第${bookNumber}册第${lessonNumber}课`;
+        }
         
         // 设置音频源
         audio.src = lesson.audioUrl;
-        console.log('音频URL:', lesson.audioUrl);  // 添加调试日志
+        console.log('音频URL:', lesson.audioUrl);
         
         // 添加错误处理
         audio.onerror = function(e) {
