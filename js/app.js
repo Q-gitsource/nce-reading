@@ -88,10 +88,10 @@ function updateLessonOptions(bookNumber, lessonSelect) {
         const option = document.createElement('option');
         option.value = i;
         if (titles && titles[i]) {
-            // 显示课号和英文标题
-            option.textContent = `第 ${i} 课: ${titles[i]}`;
+            // 修改这里的显示格式
+            option.textContent = `第${i}课 ${titles[i]}`;  // 移除空格，使用中文的"课"字
         } else {
-            option.textContent = `第 ${i} 课`;
+            option.textContent = `第${i}课`;
         }
         lessonSelect.appendChild(option);
     }
