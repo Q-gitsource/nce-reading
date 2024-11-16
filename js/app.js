@@ -74,7 +74,9 @@ function updateLessonOptions(bookNumber, lessonSelect) {
     // 获取选中册数的总课程数和标题
     const totalLessons = lessonData[bookNumber]?.totalLessons;
     const titles = bookNumber === '4' ? book4Titles : 
-                  bookNumber === '3' ? book3Titles : null;
+                  bookNumber === '3' ? book3Titles :
+                  bookNumber === '2' ? book2Titles :
+                  bookNumber === '1' ? book1Titles : null;
     
     if (!totalLessons) {
         console.error('未找到对应册数的课程数据');
