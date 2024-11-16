@@ -78,6 +78,16 @@ const book4Titles = {
     48: "Planning a Share Portfolio"
 };
 
+// 添加第三册课程标题
+const book3Titles = {
+    1: "A Puma at large",
+    2: "Thirteen equals one",
+    3: "An unknown goddess",
+    4: "The double life of Alfred Bloggs",
+    5: "The facts",
+    60: "Too early and too late"
+};
+
 // GitHub Pages 基础 URL
 const AUDIO_BASE_URL = '/nce-reading/audio';
 
@@ -91,6 +101,15 @@ for (let book in lessonData) {
             
             lessonData[book].lessons[i] = {
                 title: `${book4Titles[i]}`,
+                audioUrl: `${AUDIO_BASE_URL}/${fileName}`
+            };
+        } else if (book === '3') {
+            const paddedNumber = i.toString().padStart(2, '0');
+            const title = book3Titles[i];
+            const fileName = `${paddedNumber}－${title}.mp3`;
+            
+            lessonData[book].lessons[i] = {
+                title: `${book3Titles[i]}`,
                 audioUrl: `${AUDIO_BASE_URL}/${fileName}`
             };
         } else {
