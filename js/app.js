@@ -1,0 +1,146 @@
+async function initializeApp() {
+    try {
+        console.log('开始初始化应用...');
+        console.log('检查 DOM 元素:');
+        console.log('bookSelect:', document.getElementById('bookSelect'));
+        console.log('lessonSelect:', document.getElementById('lessonSelect'));
+        
+        // 获取选择元素
+        const bookSelect = document.getElementById('bookSelect');
+        const lessonSelect = document.getElementById('lessonSelect');
+        
+        // 初始化课程选择功能
+        initLessonSelection(bookSelect, lessonSelect);
+        
+        // 初始化模式选择
+        const modeSelection = document.getElementById('modeSelection');
+        modeSelection.addEventListener('click', (e) => {
+            if (e.target.dataset.mode) {
+                switchMode(e.target.dataset.mode);
+            }
+        });
+        
+        console.log('应用初始化完成');
+    } catch (error) {
+        console.error('应用初始化失败:', error);
+        handleError(error);
+    }
+}
+
+function initLessonSelection(bookSelect, lessonSelect) {
+    // 初始状态设置
+    lessonSelect.disabled = true;
+    
+    // 添加册数选择事件监听器
+    bookSelect.addEventListener('change', function() {
+        const selectedBook = this.value;
+        console.log('选择册数:', selectedBook); // 调试日志
+        
+        if (selectedBook) {
+            updateLessonOptions(selectedBook, lessonSelect);
+        } else {
+            // 如果没有选择册数，禁用课程选择
+            lessonSelect.disabled = true;
+            lessonSelect.innerHTML = '<option value="">选择课程</option>';
+        }
+    });
+
+    // 添加课程选择事件监听器
+    lessonSelect.addEventListener('change', function() {
+        const selectedLesson = this.value;
+        console.log('选择课程:', selectedLesson); // 调试日志
+        
+        if (selectedLesson) {
+            const selectedBook = bookSelect.value;
+            loadLesson(selectedBook, selectedLesson);
+        }
+    });
+}
+
+function updateLessonOptions(bookNumber, lessonSelect) {
+    console.log('更新课程选项，册数:', bookNumber);
+    
+    // 清空现有选项
+    lessonSelect.innerHTML = '<option value="">选择课程</option>';
+    
+    if (!bookNumber) {
+        lessonSelect.disabled = true;
+        return;
+    }
+
+    // 启用课程选择
+    lessonSelect.disabled = false;
+    
+    // 获取选中册数的总课程数
+    const totalLessons = lessonData[bookNumber]?.totalLessons;
+    
+    if (!totalLessons) {
+        console.error('未找到对应册数的课程数据');
+        return;
+    }
+    
+    // 添加课程选项
+    for (let i = 1; i <= totalLessons; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = `第 ${i} 课`;
+        lessonSelect.appendChild(option);
+    }
+    
+    lessonSelect.disabled = false;
+    console.log(`已添加 ${totalLessons} 个课程选项`);
+}
+
+async function loadLesson(bookNumber, lessonNumber) {
+    try {
+        console.log(`尝试加载第${bookNumber}册第${lessonNumber}课`);
+        const lesson = await loadLessonData(bookNumber, lessonNumber);
+        console.log('成功加载课程数据:', lesson);
+        
+        // 显示课程内容
+        const sentenceDisplay = document.getElementById('sentenceDisplay');
+        if (sentenceDisplay) {
+            sentenceDisplay.innerHTML = `<h2>${lesson.title}</h2>`;
+            
+            // 更新音频源
+            const audio = document.getElementById('lessonAudio');
+            if (audio && lesson.audioUrl) {
+                audio.src = lesson.audioUrl;
+                audio.onerror = function() {
+                    console.error('音频加载失败');
+                    handleError(new Error('音频文件加载失败'));
+                };
+            }
+        } else {
+            console.error('未找到 sentenceDisplay 元素');
+        }
+    } catch (error) {
+        console.error('加载课程失败:', error);
+        handleError(error);
+    }
+}
+
+// 当 DOM 加载完成后开始初始化
+document.addEventListener('DOMContentLoaded', initializeApp);
+
+function switchMode(mode) {
+    console.log(`切换到${mode}模式`);
+}
+
+function handleError(error) {
+    console.error('错误:', error);
+    const errorDiv = document.getElementById('error-message') || createErrorElement();
+    errorDiv.textContent = `出错了：${error.message}`;
+    errorDiv.style.display = 'block';
+    setTimeout(() => {
+        errorDiv.style.display = 'none';
+    }, 3000);
+}
+
+function createErrorElement() {
+    const div = document.createElement('div');
+    div.id = 'error-message';
+    div.className = 'error-message';
+    document.body.appendChild(div);
+    return div;
+} 
