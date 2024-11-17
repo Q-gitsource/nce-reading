@@ -240,16 +240,17 @@ const book2Titles = {
 
 // 修改文件名生成函数
 function generateAudioUrl(book, number, title) {
-    // 使用 OneDrive 直接下载链接
-    const oneDriveBaseUrl = 'https://onedrive.live.com/download';
+    // 获取 OneDrive 共享文件夹的 embed URL
+    const embedUrl = 'https://onedrive.live.com/embed';
     const cid = '284e33473ea70623';
-    const authKey = 'AamX8UW7u70SFyjw';
+    const resid = '284e33473ea70623%21105';
+    const authkey = 'AamX8UW7u70SFyjw';
     
     // 生成文件路径
     const filePath = `book${book}/${number}－${title}.mp3`;
     
-    // 返回完整的下载链接
-    return `${oneDriveBaseUrl}?cid=${cid}&resid=${cid}!105&authkey=${authKey}&parId=/nce-reading/${filePath}`;
+    // 返回完整的嵌入式 URL
+    return `${embedUrl}?cid=${cid}&resid=${resid}&authkey=${authkey}&em=2&parId=${encodeURIComponent(filePath)}`;
 }
 
 // 生成课程数据

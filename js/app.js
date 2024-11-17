@@ -44,31 +44,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const lesson = lessonData[bookNumber].lessons[lessonNumber];
-        if (!lesson.title) {
-            errorMessage.textContent = '课程数据不完整';
-            return;
-        }
         
-        console.log('尝试加载音频:', lesson.audioUrl);
+        // 直接设置音频源
+        audioPlayer.src = lesson.audioUrl;
         
-        // 使用 fetch 先检查文件是否存在
-        fetch(lesson.audioUrl)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP错误: ${response.status}`);
-                }
-                return response.blob();
-            })
-            .then(blob => {
-                const url = URL.createObjectURL(blob);
-                audioPlayer.src = url;
-                errorMessage.textContent = '';
-                console.log('音频加载成功');
-            })
-            .catch(error => {
-                console.error('音频加载失败:', error);
-                errorMessage.textContent = `无法加载音频文件，请检查网络连接`;
-            });
+        // 添加加载事件监听
+        audioPlayer.onloadeddata = () => {
+            errorMessage.textContent = '';
+            console.log('音频加载成功');
+        };
+        
+        // 添加错误处理
+        audioPlayer.onerror = (e) => {
+            console.error('音频加载失败:', e);
+            errorMessage.textContent = '无法加载音频文件，请检查网络连接';
+        };
     }
 
     // 事件监听器
