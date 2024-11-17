@@ -390,52 +390,29 @@ const book1Titles = {
     144: "He hasn't been served yet."
 };
 
-// GitHub Pages 基础 URL
-const AUDIO_BASE_URL = '/nce-reading/audio';
+// 修改音频基础路径为相对路径
+const AUDIO_BASE_URL = './audio';  // 改为相对路径
 
 // 为每个课程生成数据
 for (let book in lessonData) {
     for (let i = 1; i <= lessonData[book].totalLessons; i++) {
-        if (book === '4') {
-            const paddedNumber = i.toString().padStart(2, '0');
-            const title = book4Titles[i];
-            const fileName = `${paddedNumber}－${title}.mp3`;
+        const paddedNumber = i.toString().padStart(2, '0');
+        
+        if (book === '4' || book === '3') {  // 第三册和第四册有音频文件
+            const titles = book === '4' ? book4Titles : book3Titles;
+            const title = titles[i];
+            const fileName = `${paddedNumber}－${title.replace(/['"]/g, '')}.mp3`;
             
             lessonData[book].lessons[i] = {
-                title: `${book4Titles[i]}`,
-                audioUrl: `${AUDIO_BASE_URL}/${fileName}`
+                title: `${titles[i]}`,
+                audioUrl: `${AUDIO_BASE_URL}/${encodeURIComponent(fileName)}`
             };
-        } else if (book === '3') {
-            const paddedNumber = i.toString().padStart(2, '0');
-            const title = book3Titles[i];
-            const fileName = `${paddedNumber}－${title}.mp3`;
             
-            lessonData[book].lessons[i] = {
-                title: `${book3Titles[i]}`,
-                audioUrl: `${AUDIO_BASE_URL}/${fileName}`
-            };
-        } else if (book === '2') {
-            const paddedNumber = i.toString().padStart(2, '0');
-            const title = book2Titles[i];
-            const fileName = `${paddedNumber}－${title}.mp3`;
-            
-            lessonData[book].lessons[i] = {
-                title: `${book2Titles[i]}`,
-                audioUrl: `${AUDIO_BASE_URL}/${fileName}`
-            };
-        } else if (book === '1') {
-            const paddedNumber = i.toString().padStart(2, '0');
-            const title = book1Titles[i];
-            const fileName = `${paddedNumber}－${title}.mp3`;
-            
-            lessonData[book].lessons[i] = {
-                title: `${book1Titles[i]}`,
-                audioUrl: `${AUDIO_BASE_URL}/${fileName}`
-            };
+            console.log(`生成音频URL: ${AUDIO_BASE_URL}/${encodeURIComponent(fileName)}`);
         } else {
             lessonData[book].lessons[i] = {
-                title: `第${book}册第${i}课`,
-                audioUrl: null
+                title: book === '2' ? book2Titles[i] : book1Titles[i],
+                audioUrl: null  // 第一册和第二册暂时没有音频
             };
         }
     }
