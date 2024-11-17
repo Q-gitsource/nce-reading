@@ -9,8 +9,14 @@ for (let book in lessonData) {
                          book2Titles;
             let title = titles[i];
             
-            // 生成音频 URL，使用实际的文件名格式
-            const audioUrl = `./audio/book${book}/${paddedNumber}－${title}.mp3`;
+            // 修改文件名生成逻辑，移除标点符号
+            const safeTitle = title
+                .replace(/[.,!?']/g, '')  // 移除标点符号
+                .replace(/\s+/g, ' ')     // 规范化空格
+                .trim();                  // 移除首尾空格
+            
+            // 生成音频 URL
+            const audioUrl = `./audio/book${book}/${paddedNumber}－${safeTitle}.mp3`;
             
             lessonData[book].lessons[i] = {
                 title: `${titles[i]}`,
