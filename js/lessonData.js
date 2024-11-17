@@ -27,7 +27,14 @@ const book4Titles = {
     1: "Finding Fossil Man",
     2: "Spare That Spider",
     3: "Matterhorn Man",
-    // ... 其他标题
+    4: "Seeing Hands",
+    5: "Youth",
+    6: "The Sporting Spirit",
+    7: "Bats",
+    8: "Trading Standards",
+    9: "Royal Espionage",
+    10: "Silicon Valley",
+    // ... 继续添加剩余标题
 };
 
 // 第三册课程的完整标题
@@ -35,7 +42,9 @@ const book3Titles = {
     1: "A Puma at Large",
     2: "Thirteen equals one",
     3: "An unknown goddess",
-    // ... 其他标题
+    4: "The Double Life of Alfred Bloggs",
+    5: "The Facts",
+    // ... 继续添加剩余标题
 };
 
 // 第二册课程的完整标题
@@ -43,7 +52,9 @@ const book2Titles = {
     1: "A private conversation",
     2: "Breakfast or lunch?",
     3: "Please send me a card",
-    // ... 其他标题
+    4: "An exciting trip",
+    5: "No wrong numbers",
+    // ... 继续添加剩余标题
 };
 
 // 然后生成课程数据
