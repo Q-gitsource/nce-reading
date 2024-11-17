@@ -240,15 +240,16 @@ const book2Titles = {
 
 // 修改文件名生成函数
 function generateAudioUrl(book, number, title) {
-    // OneDrive 文件夹的 ID
-    const folderId = '284e33473ea70623%21105';
+    // 使用 OneDrive 直接下载链接
+    const oneDriveBaseUrl = 'https://onedrive.live.com/download';
+    const cid = '284e33473ea70623';
     const authKey = 'AamX8UW7u70SFyjw';
     
-    // 生成文件名
-    const fileName = `${number}－${title}.mp3`;
+    // 生成文件路径
+    const filePath = `book${book}/${number}－${title}.mp3`;
     
-    // 生成 OneDrive 直接下载链接
-    return `https://onedrive.live.com/download?cid=284e33473ea70623&resid=${folderId}&authkey=${authKey}&parId=${folderId}&fileName=${encodeURIComponent(fileName)}`;
+    // 返回完整的下载链接
+    return `${oneDriveBaseUrl}?cid=${cid}&resid=${cid}!105&authkey=${authKey}&parId=/nce-reading/${filePath}`;
 }
 
 // 生成课程数据
@@ -262,8 +263,8 @@ for (let book in lessonData) {
                          book2Titles;
             let title = titles[i];
             
-            if (title) {  // 只在标题存在时创建课程数据
-                // 使用新的函数生成音频URL
+            if (title) {
+                // 生成音频URL
                 const audioUrl = generateAudioUrl(book, paddedNumber, title);
                 
                 lessonData[book].lessons[i] = {
