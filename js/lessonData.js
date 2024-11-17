@@ -238,6 +238,11 @@ const book2Titles = {
     96: "The dead return"
 };
 
+// 首先定义基础 URL
+const baseUrl = window.location.hostname === 'q-gitsource.github.io' 
+    ? '/nce-reading' // GitHub Pages 路径
+    : '.'; // 本地开发路径
+
 // 然后生成课程数据
 for (let book in lessonData) {
     for (let i = 1; i <= lessonData[book].totalLessons; i++) {
@@ -249,13 +254,16 @@ for (let book in lessonData) {
                          book2Titles;
             let title = titles[i];
             
-            // 生成音频 URL，完全匹配实际文件名
-            const audioUrl = `./audio/book${book}/${paddedNumber}－${title}.mp3`;
+            // 使用 baseUrl 生成音频 URL
+            const audioUrl = `${baseUrl}/audio/book${book}/${paddedNumber}－${title}.mp3`;
             
             lessonData[book].lessons[i] = {
                 title: `${titles[i]}`,
                 audioUrl: audioUrl
             };
+            
+            // 添加调试日志
+            console.log(`生成音频URL: ${audioUrl}`);
         }
     }
 } 
