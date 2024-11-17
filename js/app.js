@@ -7,28 +7,43 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 更新课程选项
     function updateLessonOptions(bookNumber) {
-        lessonSelect.innerHTML = '';
+        lessonSelect.innerHTML = ''; // 清空现有选项
+        
+        // 获取当前选中册数的总课程数
         const totalLessons = lessonData[bookNumber].totalLessons;
         
+        // 添加一个默认选项
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = '请选择课程';
+        lessonSelect.appendChild(defaultOption);
+        
+        // 添加所有课程选项
         for (let i = 1; i <= totalLessons; i++) {
-            const option = document.createElement('option');
-            option.value = i;
-            option.textContent = `第${i}课 ${lessonData[bookNumber].lessons[i].title}`;
-            lessonSelect.appendChild(option);
+            if (lessonData[bookNumber].lessons[i]) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = `第${i}课 ${lessonData[bookNumber].lessons[i].title}`;
+                lessonSelect.appendChild(option);
+            }
         }
+        
+        // 触发 change 事件以更新音频
+        lessonSelect.dispatchEvent(new Event('change'));
     }
 
     // 加载音频
     function loadAudio() {
         const bookNumber = bookSelect.value;
         const lessonNumber = lessonSelect.value;
-        const lesson = lessonData[bookNumber].lessons[lessonNumber];
-        const errorMessage = document.getElementById('errorMessage');
         
-        if (lesson && lesson.audioUrl) {
+        // 只有当选择了课程时才加载音频
+        if (lessonNumber && lessonData[bookNumber].lessons[lessonNumber]) {
+            const lesson = lessonData[bookNumber].lessons[lessonNumber];
+            const errorMessage = document.getElementById('errorMessage');
+            
             console.log('尝试加载音频:', lesson.audioUrl);
             
-            // 先检查文件是否存在
             fetch(lesson.audioUrl)
                 .then(response => {
                     if (!response.ok) {
@@ -49,21 +64,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 音频错误处理
-    audioPlayer.addEventListener('error', (e) => {
-        console.error('音频播放器错误:', e.target.error);
-    });
-
     // 事件监听器
     bookSelect.addEventListener('change', function() {
-        console.log('选择册数:', this.value); // 调试日志
+        console.log('选择册数:', this.value);
         updateLessonOptions(this.value);
-        loadAudio();
     });
 
     lessonSelect.addEventListener('change', function() {
-        console.log('选择课程:', this.value); // 调试日志
-        loadAudio();
+        console.log('选择课程:', this.value);
+        if (this.value) {
+            loadAudio();
+        }
     });
 
     playBtn.addEventListener('click', () => audioPlayer.play());
@@ -71,5 +82,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 初始化
     updateLessonOptions(bookSelect.value);
-    loadAudio();
 }); 
