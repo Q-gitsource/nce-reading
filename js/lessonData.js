@@ -9,22 +9,13 @@ for (let book in lessonData) {
                          book2Titles;
             let title = titles[i];
             
-            // 修改文件名生成逻辑，移除标点符号
-            const safeTitle = title
-                .replace(/[.,!?']/g, '')  // 移除标点符号
-                .replace(/\s+/g, ' ')     // 规范化空格
-                .trim();                  // 移除首尾空格
-            
-            // 生成音频 URL
-            const audioUrl = `./audio/book${book}/${paddedNumber}－${safeTitle}.mp3`;
+            // 生成音频 URL，完全匹配实际文件名
+            const audioUrl = `./audio/book${book}/${paddedNumber}－${title}.mp3`;
             
             lessonData[book].lessons[i] = {
                 title: `${titles[i]}`,
                 audioUrl: audioUrl
             };
-            
-            // 添加调试日志
-            console.log(`生成音频URL: ${audioUrl}`);
         }
     }
 } 

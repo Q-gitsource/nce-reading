@@ -26,29 +26,25 @@ document.addEventListener('DOMContentLoaded', function() {
         const errorMessage = document.getElementById('errorMessage');
         
         if (lesson && lesson.audioUrl) {
-            console.log('当前选择:', {
-                book: bookNumber,
-                lesson: lessonNumber,
-                title: lesson.title,
-                url: lesson.audioUrl
-            });
+            console.log('尝试加载音频:', lesson.audioUrl);
             
-            fetch(lesson.audioUrl, { method: 'HEAD' })
+            // 先检查文件是否存在
+            fetch(lesson.audioUrl)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error(`文件不存在 (${response.status}): ${lesson.audioUrl}`);
+                        throw new Error(`HTTP错误: ${response.status}`);
                     }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    audioPlayer.src = url;
                     errorMessage.textContent = '';
-                    audioPlayer.src = lesson.audioUrl;
-                    audioPlayer.load();
                     console.log('音频加载成功');
                 })
                 .catch(error => {
                     console.error('音频加载失败:', error);
-                    errorMessage.textContent = `无法加载音频文件，请确保文件存在且命名正确`;
-                    // 显示详细的调试信息
-                    console.log('完整URL:', new URL(lesson.audioUrl, window.location.href).href);
-                    console.log('当前课程信息:', lesson);
+                    errorMessage.textContent = `无法加载音频文件: ${error.message}`;
                 });
         }
     }
