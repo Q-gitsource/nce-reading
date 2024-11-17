@@ -1,181 +1,74 @@
-async function initializeApp() {
-    try {
-        console.log('开始初始化应用...');
-        console.log('检查 DOM 元素:');
-        console.log('bookSelect:', document.getElementById('bookSelect'));
-        console.log('lessonSelect:', document.getElementById('lessonSelect'));
-        
-        // 获取选择元素
-        const bookSelect = document.getElementById('bookSelect');
-        const lessonSelect = document.getElementById('lessonSelect');
-        
-        // 初始化课程选择功能
-        initLessonSelection(bookSelect, lessonSelect);
-        
-        // 初始化模式选择
-        const modeSelection = document.getElementById('modeSelection');
-        modeSelection.addEventListener('click', (e) => {
-            if (e.target.dataset.mode) {
-                switchMode(e.target.dataset.mode);
-            }
-        });
-        
-        console.log('应用初始化完成');
-    } catch (error) {
-        console.error('应用初始化失败:', error);
-        handleError(error);
-    }
-}
+document.addEventListener('DOMContentLoaded', function() {
+    const bookSelect = document.getElementById('bookSelect');
+    const lessonSelect = document.getElementById('lessonSelect');
+    const audioPlayer = document.getElementById('audioPlayer');
+    const playBtn = document.getElementById('playBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
 
-function initLessonSelection(bookSelect, lessonSelect) {
-    // 初始状态设置
-    lessonSelect.disabled = true;
-    
-    // 添加册数选择事件监听器
+    // 更新课程选项
+    function updateLessonOptions(bookNumber) {
+        lessonSelect.innerHTML = '';
+        const totalLessons = lessonData[bookNumber].totalLessons;
+        
+        for (let i = 1; i <= totalLessons; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = `第${i}课 ${lessonData[bookNumber].lessons[i].title}`;
+            lessonSelect.appendChild(option);
+        }
+    }
+
+    // 加载音频
+    function loadAudio() {
+        const bookNumber = bookSelect.value;
+        const lessonNumber = lessonSelect.value;
+        const lesson = lessonData[bookNumber].lessons[lessonNumber];
+        const errorMessage = document.getElementById('errorMessage');
+        
+        if (lesson && lesson.audioUrl) {
+            const absolutePath = new URL(lesson.audioUrl, window.location.href).href;
+            console.log('尝试加载音频:', lesson.audioUrl);
+            console.log('完整路径:', absolutePath);
+            
+            fetch(lesson.audioUrl, { method: 'HEAD' })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`文件不存在: ${response.status}`);
+                    }
+                    errorMessage.textContent = ''; // 清除错误信息
+                    console.log('文件存在，开始加载');
+                    audioPlayer.src = lesson.audioUrl;
+                    audioPlayer.load();
+                })
+                .catch(error => {
+                    console.error('检查文件失败:', error);
+                    errorMessage.textContent = `音频加载失败: ${error.message}`;
+                    console.log('尝试的文件路径:', lesson.audioUrl);
+                });
+        }
+    }
+
+    // 音频错误处理
+    audioPlayer.addEventListener('error', (e) => {
+        console.error('音频播放器错误:', e.target.error);
+    });
+
+    // 事件监听器
     bookSelect.addEventListener('change', function() {
-        const selectedBook = this.value;
-        console.log('选择册数:', selectedBook); // 调试日志
-        
-        if (selectedBook) {
-            updateLessonOptions(selectedBook, lessonSelect);
-        } else {
-            // 如果没有选择册数，禁用课程选择
-            lessonSelect.disabled = true;
-            lessonSelect.innerHTML = '<option value="">选择课程</option>';
-        }
+        console.log('选择册数:', this.value); // 调试日志
+        updateLessonOptions(this.value);
+        loadAudio();
     });
 
-    // 添加课程选择事件监听器
     lessonSelect.addEventListener('change', function() {
-        const selectedLesson = this.value;
-        console.log('选择课程:', selectedLesson); // 调试日志
-        
-        if (selectedLesson) {
-            const selectedBook = bookSelect.value;
-            loadLesson(selectedBook, selectedLesson);
-        }
+        console.log('选择课程:', this.value); // 调试日志
+        loadAudio();
     });
-}
 
-function updateLessonOptions(bookNumber, lessonSelect) {
-    console.log('更新课程选项，册数:', bookNumber);
-    
-    // 清空现有选项
-    lessonSelect.innerHTML = '<option value="">选择课程</option>';
-    
-    if (!bookNumber) {
-        lessonSelect.disabled = true;
-        return;
-    }
+    playBtn.addEventListener('click', () => audioPlayer.play());
+    pauseBtn.addEventListener('click', () => audioPlayer.pause());
 
-    // 启用课程选择
-    lessonSelect.disabled = false;
-    
-    // 获取选中册数的总课程数和标题
-    const totalLessons = lessonData[bookNumber]?.totalLessons;
-    const titles = bookNumber === '4' ? book4Titles : 
-                  bookNumber === '3' ? book3Titles :
-                  bookNumber === '2' ? book2Titles :
-                  bookNumber === '1' ? book1Titles : null;
-    
-    if (!totalLessons) {
-        console.error('未找到对应册数的课程数据');
-        return;
-    }
-    
-    // 添加课程选项
-    for (let i = 1; i <= totalLessons; i++) {
-        const option = document.createElement('option');
-        option.value = i;
-        if (titles && titles[i]) {
-            // 修改这里的显示格式
-            option.textContent = `第${i}课 ${titles[i]}`;  // 移除空格，使用中文的"课"字
-        } else {
-            option.textContent = `第${i}课`;
-        }
-        lessonSelect.appendChild(option);
-    }
-    
-    lessonSelect.disabled = false;
-}
-
-// 添加 getLessonData 函数
-function getLessonData(bookNumber, lessonNumber) {
-    return new Promise((resolve, reject) => {
-        try {
-            const lesson = lessonData[bookNumber]?.lessons[lessonNumber];
-            if (!lesson) {
-                throw new Error('未找到课程数据');
-            }
-            resolve(lesson);
-        } catch (error) {
-            reject(error);
-        }
-    });
-}
-
-async function loadLesson(bookNumber, lessonNumber) {
-    try {
-        const lesson = await getLessonData(bookNumber, lessonNumber);
-        console.log('加载课程数据:', lesson);
-        
-        const audio = document.getElementById('lessonAudio');
-        const sentenceDisplay = document.getElementById('sentenceDisplay');
-        
-        // 显示课程标题
-        const titles = bookNumber === '4' ? book4Titles : 
-                      bookNumber === '3' ? book3Titles :
-                      bookNumber === '2' ? book2Titles :
-                      bookNumber === '1' ? book1Titles : null;
-        
-        if (titles && titles[lessonNumber]) {
-            sentenceDisplay.textContent = titles[lessonNumber];
-        } else {
-            sentenceDisplay.textContent = `第${bookNumber}册第${lessonNumber}课`;
-        }
-        
-        // 设置音频源
-        audio.src = lesson.audioUrl;
-        console.log('音频URL:', lesson.audioUrl);
-        
-        // 添加错误处理
-        audio.onerror = function(e) {
-            console.error('音频加载失败:', e);
-            document.getElementById('feedback').textContent = '音频加载失败，请检查文件路径';
-        };
-        
-        // 添加成功处理
-        audio.onloadeddata = function() {
-            console.log('音频加载成功');
-            document.getElementById('feedback').textContent = '';
-        };
-    } catch (error) {
-        console.error('加载课程失败:', error);
-        document.getElementById('feedback').textContent = error.message;
-    }
-}
-
-// 当 DOM 加载完成后开始初始化
-document.addEventListener('DOMContentLoaded', initializeApp);
-
-function switchMode(mode) {
-    console.log(`切换到${mode}模式`);
-}
-
-function handleError(error) {
-    console.error('错误:', error);
-    const errorDiv = document.getElementById('error-message') || createErrorElement();
-    errorDiv.textContent = `出错了：${error.message}`;
-    errorDiv.style.display = 'block';
-    setTimeout(() => {
-        errorDiv.style.display = 'none';
-    }, 3000);
-}
-
-function createErrorElement() {
-    const div = document.createElement('div');
-    div.id = 'error-message';
-    div.className = 'error-message';
-    document.body.appendChild(div);
-    return div;
-} 
+    // 初始化
+    updateLessonOptions(bookSelect.value);
+    loadAudio();
+}); 
