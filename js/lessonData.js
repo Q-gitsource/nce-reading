@@ -240,22 +240,14 @@ const book2Titles = {
 
 // 修改文件名生成函数
 function generateAudioUrl(book, number, title) {
-    // OneDrive 共享文件夹的基本信息
-    const driveId = '284e33473ea70623';
-    const folderId = '284E33473EA70623%21105';
-    const authKey = 'AamX8UW7u70SFyjw';
+    // OneDrive 共享文件夹的链接信息
+    const baseUrl = 'https://1drv.ms/f/c/284e33473ea70623/EgvDgHcnxgxDmVgIaVF46kwBevhxx0AamX8UW7u70SFyjw';
     
     // 构建文件路径
     const filePath = `book${book}/${number}－${title}.mp3`;
     
-    // 使用 URL 对象构建链接
-    const url = new URL('https://onedrive.live.com/download');
-    url.searchParams.set('cid', driveId);
-    url.searchParams.set('resid', folderId);
-    url.searchParams.set('authkey', authKey);
-    url.searchParams.set('path', filePath);
-    
-    return url.toString();
+    // 使用 OneDrive 的嵌入式播放链接
+    return `https://onedrive.live.com/embed?cid=284e33473ea70623&resid=284E33473EA70623%21105&authkey=AamX8UW7u70SFyjw&em=2&path=/${encodeURIComponent(filePath)}`;
 }
 
 // 生成课程数据
