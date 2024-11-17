@@ -238,12 +238,20 @@ const book2Titles = {
     96: "The dead return"
 };
 
-// 首先定义基础 URL
-const baseUrl = window.location.hostname === 'q-gitsource.github.io' 
-    ? '/nce-reading' // GitHub Pages 路径
-    : '.'; // 本地开发路径
+// 修改文件名生成函数
+function generateAudioUrl(book, number, title) {
+    // OneDrive 文件夹的 ID
+    const folderId = '284e33473ea70623%21105';
+    const authKey = 'AamX8UW7u70SFyjw';
+    
+    // 生成文件名
+    const fileName = `${number}－${title}.mp3`;
+    
+    // 生成 OneDrive 直接下载链接
+    return `https://onedrive.live.com/download?cid=284e33473ea70623&resid=${folderId}&authkey=${authKey}&parId=${folderId}&fileName=${encodeURIComponent(fileName)}`;
+}
 
-// 然后生成课程数据
+// 生成课程数据
 for (let book in lessonData) {
     for (let i = 1; i <= lessonData[book].totalLessons; i++) {
         const paddedNumber = i.toString().padStart(2, '0');
@@ -254,16 +262,22 @@ for (let book in lessonData) {
                          book2Titles;
             let title = titles[i];
             
-            // 使用 baseUrl 生成音频 URL
-            const audioUrl = `${baseUrl}/audio/book${book}/${paddedNumber}－${title}.mp3`;
-            
-            lessonData[book].lessons[i] = {
-                title: `${titles[i]}`,
-                audioUrl: audioUrl
-            };
-            
-            // 添加调试日志
-            console.log(`生成音频URL: ${audioUrl}`);
+            if (title) {  // 只在标题存在时创建课程数据
+                // 使用新的函数生成音频URL
+                const audioUrl = generateAudioUrl(book, paddedNumber, title);
+                
+                lessonData[book].lessons[i] = {
+                    title: title,
+                    audioUrl: audioUrl
+                };
+                
+                // 添加调试日志
+                console.log(`生成音频URL: ${audioUrl}`);
+            }
         }
     }
-} 
+}
+
+// 添加调试信息
+console.log('当前域名:', window.location.hostname);
+console.log('baseUrl:', window.location.hostname === 'q-gitsource.github.io' ? '/nce-reading' : '.');

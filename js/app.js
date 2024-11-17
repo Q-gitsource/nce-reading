@@ -36,32 +36,34 @@ document.addEventListener('DOMContentLoaded', function() {
     function loadAudio() {
         const bookNumber = bookSelect.value;
         const lessonNumber = lessonSelect.value;
+        const errorMessage = document.getElementById('errorMessage');
         
-        // 只有当选择了课程时才加载音频
-        if (lessonNumber && lessonData[bookNumber].lessons[lessonNumber]) {
-            const lesson = lessonData[bookNumber].lessons[lessonNumber];
-            const errorMessage = document.getElementById('errorMessage');
-            
-            console.log('尝试加载音频:', lesson.audioUrl);
-            
-            fetch(lesson.audioUrl)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP错误: ${response.status}`);
-                    }
-                    return response.blob();
-                })
-                .then(blob => {
-                    const url = URL.createObjectURL(blob);
-                    audioPlayer.src = url;
-                    errorMessage.textContent = '';
-                    console.log('音频加载成功');
-                })
-                .catch(error => {
-                    console.error('音频加载失败:', error);
-                    errorMessage.textContent = `无法加载音频文件: ${error.message}`;
-                });
+        if (!lessonNumber || !lessonData[bookNumber].lessons[lessonNumber]) {
+            errorMessage.textContent = '请选择课程';
+            return;
         }
+
+        const lesson = lessonData[bookNumber].lessons[lessonNumber];
+        if (!lesson.title) {
+            errorMessage.textContent = '课程数据不完整';
+            return;
+        }
+        
+        // 直接设置音频源
+        audioPlayer.src = lesson.audioUrl;
+        audioPlayer.load();
+        
+        // 添加错误处理
+        audioPlayer.onerror = function(e) {
+            console.error('音频加载失败:', e);
+            errorMessage.textContent = '无法加载音频文件，请检查网络连接';
+        };
+        
+        // 添加加载成功处理
+        audioPlayer.onloadeddata = function() {
+            errorMessage.textContent = '';
+            console.log('音频加载成功');
+        };
     }
 
     // 事件监听器
@@ -77,7 +79,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    playBtn.addEventListener('click', () => audioPlayer.play());
+    playBtn.addEventListener('click', () => {
+        if (audioPlayer.src) {
+            audioPlayer.play();
+        } else {
+            document.getElementById('errorMessage').textContent = '请先选择课程';
+        }
+    });
+
     pauseBtn.addEventListener('click', () => audioPlayer.pause());
 
     // 初始化
